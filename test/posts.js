@@ -55,4 +55,6 @@ describe('Posts', function() {
         Post.findOneAndDelete(newPost);
       });
   });
+
 });
+
