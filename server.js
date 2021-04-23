@@ -27,13 +27,14 @@ app.set('view engine', 'handlebars');
 
 
 require('./controllers/posts.js')(app);
+require('./controllers/comments.js')(app);
 
 // Routes
 app.get('/', (req, res) => {
     res.render('posts-index');
   });
 
-app.get('/posts/new', (req, res) => {
+app.get('/new-post', (req, res) => {
 res.render('posts-new');
 });
 
