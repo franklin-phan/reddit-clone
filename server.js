@@ -42,3 +42,5 @@ res.render('posts-new');
 app.listen(3000, () => {
   console.log('listening on port localhost:3000!');
 });
+
+module.exports = app;
