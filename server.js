@@ -1,15 +1,32 @@
 // Require Libraries
 require('dotenv').config();
 
-var cookieParser = require('cookie-parser');
-const jwt = require('jsonwebtoken');
 
 const express = require('express');
 const bodyParser = require('body-parser');
 const expressValidator = require('express-validator');
 
+
+var cookieParser = require('cookie-parser');
+const jwt = require('jsonwebtoken');
 // App Setup
 const app = express();
+app.use(cookieParser()); // Add this after you initialize express.
+app.use(express.static('public'));
+
+var checkAuth = (req, res, next) => {
+  console.log("Checking authentication");
+  if (typeof req.cookies.nToken === "undefined" || req.cookies.nToken === null) {
+    req.user = null;
+  } else {
+    var token = req.cookies.nToken;
+    var decodedToken = jwt.decode(token, { complete: true }) || {};
+    req.user = decodedToken.payload;
+  }
+
+  next();
+};
+app.use(checkAuth);
 
 //reference public folder
 app.use(express.static('public'));
@@ -26,7 +43,6 @@ const exphbs  = require('express-handlebars');
 
 
 
-app.use(cookieParser()); // Add this after you initialize express.
 // Set db
 require('./data/reddit-db');
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
@@ -36,20 +52,9 @@ app.set('view engine', 'handlebars');
 require('./controllers/posts.js')(app);
 require('./controllers/comments.js')(app);
 require('./controllers/auth.js')(app);
+require('./controllers/replies.js')(app);
 
-// Routes
-app.get('/', (req, res) => {
-    res.render('posts-index');
-  });
 
-// LOGIN FORM
-app.get('/login', (req, res) => {
-  res.render('login');
-});
-
-app.get('/new-post', (req, res) => {
-res.render('posts-new');
-});
 
 
 // Start Server
